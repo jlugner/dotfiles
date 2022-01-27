@@ -1,6 +1,5 @@
 require 'pathname'
 
-
 CUSTOM_DESTINATIONS = {
 }
 
@@ -14,22 +13,21 @@ task default: %w(sync)
 
 task :symlinks do
   files = Dir.glob('files/**/*').filter_map do |file|
-    next nil if Dir.exist?(file)
+    next if Dir.exist?(file)
 
     pathname = Pathname.new(file)
     filename = pathname.relative_path_from('files')
+    target_path = destination_for_file(filename.to_s)
+
     p filename.to_s
 
-    [File.join(Pathname.pwd(), pathname), destination_for_file(filename.to_s)]
+    [File.join(Pathname.pwd(), pathname), target_path] 
   end
 
   p files
 
-  force = ENV['OVERRIDE_SYMLINKS'] == 'true'
-  flags = '-s'
-  flags += 'f' if force
   files.each do |file|
-    system("ln #{flags} \"#{file[0]}\" \"#{file[1]}\"")
+    system("ln \"#{file[0]}\" \"#{file[1]}\"")
   end
 end
 
