@@ -1,37 +1,34 @@
-require 'pathname'
+# frozen_string_literal: true
 
-CUSTOM_DESTINATIONS = {
-}
+CUSTOM_DESTINATIONS = {}.freeze
 
-def destination_for_file(file)
-  return CUSTOM_DESTINATIONS[file] if CUSTOM_DESTINATIONS.has_key?(file)
+def find_file_target(file)
+  return CUSTOM_DESTINATIONS[file] if CUSTOM_DESTINATIONS.key?(file)
 
-  Pathname.new("$HOME/.#{file}")
+  File.expand_path("~/.#{file}")
 end
 
-task default: %w(sync)
+task default: %w[sync]
 
 task :symlinks do
   files = Dir.glob('files/**/*').filter_map do |file|
-    next if Dir.exist?(file)
+    next if File.directory?(file)
 
-    pathname = Pathname.new(file)
-    filename = pathname.relative_path_from('files')
-    target_path = destination_for_file(filename.to_s)
+    filename = File.basename(file)
+    target_path = find_file_target(filename)
+    
+    next if File.exist?(target_path)
 
-    p filename.to_s
-
-    [File.join(Pathname.pwd(), pathname), target_path] 
+    [File.expand_path(file), target_path]
   end
 
-  p files
-
-  files.each do |file|
-    system("ln \"#{file[0]}\" \"#{file[1]}\"")
+  files.each do |(source, target)|
+    p "Adding symlink from #{target} to #{source}"
+    system("ln \"#{source}\" \"#{target}\"")
   end
 end
 
-task sync: [:pull, :symlinks]
+task sync: %w[pull symlinks]
 
 task :pull do
   system('git pull origin master')
