@@ -1,1 +1,99 @@
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" Vundle Plugins
+" =========================================================================
+Plugin 'VundleVim/Vundle.vim'
+
+Bundle 'vim-ruby/vim-ruby'
+Plugin 'sickill/vim-monokai'
+Plugin 'junegunn/fzf'
+Plugin 'junegunn/fzf.vim'
+Plugin 'jremmen/vim-ripgrep'
+Plugin 'mg979/vim-visual-multi'
+call vundle#end()            " required
+" =========================================================================
+
+filetype plugin indent on    " required
+
+" Non-Vundle stuff
+
+filetype on
+syntax on
+set omnifunc=syntaxcomplete#Complete
+
+set directory=$HOME/.vim/swapfiles//
+
+" Styling
+syntax enable
+colorscheme monokai
+set background=dark
+let g:molokai_original=1
+let g:rehash256=1
+set t_Co=256
+
+" Trailing whitespace
+:highlight ExtraWhitespace ctermbg=red guibg=red
+:autocmd Syntax * syn match ExtraWhiteSpace /\s\+$\| \+\ze\\t/
+
 set number
+
+" Searching
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+
+let mapleader=","
+" Remove highlights with leader + enter
+nmap <Leader><CR> :nohlsearch<cr>
+
+" Remap escape
+ino jj <esc>
+cno jj <c-c>
+vno v <esc>
+
+" Fuzzy finder
+nnoremap <silent> <Leader>p :FZF<CR>
+
+" Ripgrep
+nnoremap <silent> <Leader>f :Rg<CR>
+
+" File navigation
+let g:netrw_liststyle = 3 " List files as tree structure
+let g:netrw_banner = 0 " Hide file navigation banner
+nnoremap <silent> <Leader>b :Sex<CR>
+nnoremap <silent> <Leader>v :Vex<CR>
+nnoremap <silent> <Leader>o :Explore<CR>
+
+" Splitting
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
+set splitbelow " Default new horizontal split to below current split
+set splitright " Default new vertical split to right of current split
+
+" Tab completion
+set wildmode=list:longest,list:full
+set wildignore+=*.o,*.obj,.git,*.rbc,*.class,.svn,vendor/gems/*
+
+" Ruler
+set colorcolumn=100
+" Highlight row and column
+set cursorline
+set cuc cul"
+
+set expandtab
+set tabstop=2
+
+" Ruby stuff
+" =========================================================================
+
