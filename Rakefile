@@ -24,7 +24,7 @@ task :symlinks do
 
   files.each do |(source, target)|
     p "Adding symlink from #{target} to #{source}"
-    system("ln \"#{source}\" \"#{target}\"")
+    system("ln", source, target)
   end
 end
 
