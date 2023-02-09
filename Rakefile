@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
-CUSTOM_DESTINATIONS = {}.freeze
+require 'pathname'
+
+CUSTOM_DESTINATIONS = {
+  'init.lua' => '~/.hammerspoon/init.lua'
+}.freeze
 
 def find_file_target(file)
-  return CUSTOM_DESTINATIONS[file] if CUSTOM_DESTINATIONS.key?(file)
-
-  File.expand_path("~/.#{file}")
+  CUSTOM_DESTINATIONS.fetch(file, File.expand_path("~/.#{file}"))
 end
 
 task default: %w[sync]
@@ -14,17 +16,36 @@ task :symlinks do
   files = Dir.glob('files/**/*').filter_map do |file|
     next if File.directory?(file)
 
-    filename = File.basename(file)
-    target_path = find_file_target(filename)
-    
-    next if File.exist?(target_path)
+    pathname = Pathname.new(file)
+    filename = pathname.relative_path_from('files')
 
-    [File.expand_path(file), target_path]
+    [File.join(Pathname.pwd, pathname), find_file_target(filename.to_s)]
   end
 
-  files.each do |(source, target)|
-    p "Adding symlink from #{target} to #{source}"
-    system("ln", source, target)
+  existing_files = []
+
+  force = ENV['OVERRIDE_SYMLINKS'] == 'true'
+  flags = { force: force }
+  files.each do |file|
+    from, to = *file
+    from = File.expand_path(from)
+    to = File.expand_path(to)
+    to_folder = File.dirname(to)
+
+    FileUtils.mkdir_p(to_folder) unless Dir.exist?(to_folder)
+
+    begin
+      FileUtils.symlink(from, to, **flags)
+    rescue Errno::EEXIST
+      existing_files << to.split('/').last
+      next
+    end
+
+    puts "Created symlink from #{from} to #{to}"
+  end
+
+  unless existing_files.empty?
+    puts "Files #{existing_files.join(', ')} existed  and were ignored. Run with OVERRIDE_SYMLINKS=true to override"
   end
 end
 
