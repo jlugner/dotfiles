@@ -26,8 +26,7 @@ task :symlinks do
 
   force = ENV['OVERRIDE_SYMLINKS'] == 'true'
   flags = { force: force }
-  files.each do |file|
-    from, to = *file
+  files.each do |(from, to)|
     from = File.expand_path(from)
     to = File.expand_path(to)
     to_folder = File.dirname(to)
