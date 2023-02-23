@@ -180,13 +180,6 @@ hs.hotkey.bind(HYPER, "W", function()
   end
 end)
 
-hs.hotkey.bind(HYPER, "D", function()
-  laptopScreen = hs.screen('Built%-in')
-  x, y = laptopScreen:position()
-  hs.alert.show(x)
-  hs.alert.show(y)
-end)
-
 -- Browser management - open links etc depending on mode and whatever else we like
 hs.urlevent.httpCallback = function(scheme, host, params, fullUrl)
   mode = hs.settings.get(MODE_KEY)
