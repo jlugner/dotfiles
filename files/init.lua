@@ -1,4 +1,7 @@
 HYPER = {"cmd", "alt", "ctrl", "shift"}
+MODE_KEY = 'MODE'
+MODE_WORK = 'Work'
+MODE_CASUAL = 'Casual'
 
 hs.window.animationDuration = 0
 hs.window.setShadows(false)
@@ -96,7 +99,36 @@ hs.hotkey.bind('alt-shift','tab', function()
   switcher:previous()
 end)
 
+-- Mode switching
+hs.hotkey.bind(HYPER, "W", function()
+  current_mode = hs.settings.get(MODE_KEY)
+  local new_mode = (current_mode == MODE_WORK and MODE_CASUAL or MODE_WORK)
+  hs.settings.set(MODE_KEY, new_mode)
+
+  hs.alert.show("Switching to new mode: " .. new_mode)
+end)
+
+-- Browser management - open links etc depending on mode and whatever else we like
+hs.urlevent.httpCallback = function(scheme, host, params, fullUrl)
+  current_mode = hs.settings.get(MODE_KEY)
+  local browser
+  if current_mode == MODE_CASUAL then
+    browser = 'com.apple.Safari'
+  elseif current_mode == MODE_WORK then
+    browser = 'com.google.Chrome'
+  else
+    hs.alert.show('Unknown mode used, opening link in default browser')
+    browser = 'com.apple.Safari'
+  end
+  hs.alert.show("Opening in " .. browser)
+
+  hs.urlevent.openURLWithBundle(fullUrl, browser)
+end
+
 hs.hotkey.bind(HYPER, "R", function ()
   hs.reload()
 end)
-hs.alert.show("Config loaded")
+hs.settings.set(MODE_KEY, MODE_CASUAL)
+hs.alert.show("Config loaded, mode: " .. MODE_CASUAL)
+
+
