@@ -6,9 +6,6 @@ MODE_CASUAL = 'Casual'
 hs.window.animationDuration = 0
 hs.window.setShadows(false)
 
-local leftScreen = hs.screen{x=0,y=0}
-local rightScreen = hs.screen{x=1,y=0}
-
 switcher = hs.window.switcher.new() -- default windowfilter: only visible windows, all Spaces
 switcher.ui.highlightColor = {0.4, 0.4, 0.5, 0.8}
 switcher.ui.thumbnailSize = 112
@@ -17,6 +14,28 @@ switcher.ui.backgroundColor = {0.3, 0.3, 0.3, 0.5}
 -- switcher.ui.fontName = 'System'
 switcher.ui.textSize = 14
 switcher.ui.showSelectedTitle = false
+hs.application.enableSpotlightForNameSearches(true)
+
+-- Utils
+function tableLength(T)
+  local count = 0
+  for _ in pairs(T) do count = count + 1 end
+  return count
+end
+
+function screenCount()
+  return tableLength(hs.screen.allScreens())
+end
+
+function killIfRunning(applicationName)
+  application = hs.appfinder.appFromName(applicationName)
+  if application then application:kill() end
+end
+
+function hideIfRunning(applicationName)
+  application = hs.appfinder.appFromName(applicationName)
+  if application then application:hide() end
+end
 
 -- Move focused window to specified coordinates
 function push(x, y, w, h)
@@ -44,38 +63,71 @@ hs.hotkey.bind(HYPER, "K", function() push(0, 0, 1, 1) end)           -- Full
 hs.hotkey.bind(HYPER, "H", function() push(0.25, 0, 0.5, 1) end)      -- Full height, mid width, centered
 hs.hotkey.bind(HYPER, "G", function() push(0.25, 0.25, 0.5, 0.5) end) -- Mid height, mid width, centered
 
-hs.hotkey.bind(HYPER, "1", function()
+function singleMonitorCodeLayout()
+  screen = hs.screen('Built%-in')
   hs.application.launchOrFocus("Visual Studio Code")
-  hs.application.launchOrFocus("Music")
   hs.application.launchOrFocus("iTerm")
-
   local windowLayout = {
-      {"Code", nil, leftScreen, hs.layout.left75, nil, nil},
-      {"iTerm2", nil, leftScreen, hs.layout.right25, nil, nil},
-      {"Music", nil, rightScreen, hs.layout.maximized, nil, nil}
+    {"Code", nil, screen, hs.layout.maximized, nil, nil},
   }
   hs.layout.apply(windowLayout)
+end
+
+function doubleMonitorCodeLayout()
+  laptopScreen = hs.screen('Built%-in')
+  primaryScreen = hs.screen.primaryScreen()
+  hs.application.launchOrFocus("Visual Studio Code")
+  hs.application.launchOrFocus("iTerm")
+  hs.application.launchOrFocus("Google Chrome")
+  local windowLayout = {
+    {"Code", nil, primaryScreen, hs.layout.maximized, nil, nil},
+    {"iTerm2", nil, laptopScreen, hs.layout.left25, nil, nil},
+    {"Google Chrome", nil, laptopScreen, hs.layout.right75, nil, nil}
+  }
+  hs.layout.apply(windowLayout)
+end
+
+function trippleMonitorCodeLayout()
+  laptopScreen = hs.screen('Built%-in')
+  primaryScreen = hs.screen.primaryScreen()
+  laptopPositionX, _y = laptopScreen:position()
+  local secondExternalScreenX = (laptopPositionX < 0 and 1 or -1)
+  secondExternalScreen = hs.screen({x=secondExternalScreenX, y=0})
+
+  hs.application.launchOrFocus("Visual Studio Code")
+  hs.application.launchOrFocus("iTerm")
+  hs.application.launchOrFocus("Google Chrome")
+  hs.application.launchOrFocus("Music")
+  local windowLayout = {
+    {"Code", nil, primaryScreen, hs.layout.maximized, nil, nil},
+    {"iTerm2", nil, laptopScreen, hs.layout.maximized, nil, nil},
+    {"Google Chrome", nil, secondExternalScreen, hs.layout.right50, nil, nil},
+    {"Music", nil, secondExternalScreen, hs.layout.left50, nil, nil}
+  }
+  hs.layout.apply(windowLayout)
+end
+
+function setCodeLayout()
+  local screens = screenCount()
+  if screens == 1 then
+    singleMonitorCodeLayout()
+  elseif screens == 2 then
+    doubleMonitorCodeLayout()
+  else
+    trippleMonitorCodeLayout()
+  end
+end
+
+hs.hotkey.bind(HYPER, "1", function()
+  singleMonitorCodeLayout()
 end)
 
 hs.hotkey.bind(HYPER, "2", function()
-  local windowLayout = {
-      {"Code", nil, leftScreen, hs.layout.maximized, nil, nil},
-      {"iTerm2", nil, rightScreen, hs.layout.maximized, nil, nil}
-  }
-  hs.layout.apply(windowLayout)
-  hs.application.launchOrFocus("iTerm")
-  hs.application.launchOrFocus("Visual Studio Code")
+  doubleMonitorCodeLayout()
 end)
 
 hs.hotkey.bind(HYPER, "3", function()
-  hs.application.launchOrFocus("Visual Studio Code")
-  hs.application.launchOrFocus("iTerm")
-
-  local windowLayout = {
-      {"Code", nil, leftScreen, hs.layout.left75, nil, nil},
-      {"iTerm2", nil, leftScreen, hs.layout.right25, nil, nil},
-  }
-  hs.layout.apply(windowLayout)
+  trippleMonitorCodeLayout()
 end)
 
 -- Move focused window one screen right
@@ -100,28 +152,53 @@ hs.hotkey.bind('alt-shift','tab', function()
 end)
 
 -- Mode switching
+function enterWorkMode()
+  killIfRunning("Mail")
+  hideIfRunning("Safari")
+  setCodeLayout()
+end
+
+function enterCasualMode()
+  killIfRunning("Slack")
+  killIfRunning("Microsoft Teams")
+  killIfRunning("Microsoft Outlook")
+  hideIfRunning("Google Chrome")
+end
+
 hs.hotkey.bind(HYPER, "W", function()
   current_mode = hs.settings.get(MODE_KEY)
   local new_mode = (current_mode == MODE_WORK and MODE_CASUAL or MODE_WORK)
   hs.settings.set(MODE_KEY, new_mode)
 
   hs.alert.show("Switching to new mode: " .. new_mode)
+  if new_mode == MODE_WORK then
+    enterWorkMode()
+  elseif new_mode == MODE_CASUAL then
+    enterCasualMode()
+  else
+    -- what?
+  end
+end)
+
+hs.hotkey.bind(HYPER, "D", function()
+  laptopScreen = hs.screen('Built%-in')
+  x, y = laptopScreen:position()
+  hs.alert.show(x)
+  hs.alert.show(y)
 end)
 
 -- Browser management - open links etc depending on mode and whatever else we like
 hs.urlevent.httpCallback = function(scheme, host, params, fullUrl)
-  current_mode = hs.settings.get(MODE_KEY)
+  mode = hs.settings.get(MODE_KEY)
   local browser
-  if current_mode == MODE_CASUAL then
+  if mode == MODE_CASUAL then
     browser = 'com.apple.Safari'
-  elseif current_mode == MODE_WORK then
+  elseif mode == MODE_WORK then
     browser = 'com.google.Chrome'
   else
     hs.alert.show('Unknown mode used, opening link in default browser')
     browser = 'com.apple.Safari'
   end
-  hs.alert.show("Opening in " .. browser)
-
   hs.urlevent.openURLWithBundle(fullUrl, browser)
 end
 
