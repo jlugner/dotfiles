@@ -22,6 +22,7 @@ alias reload=". ~/.zshrc"
 alias j="jump"
 alias zconfig="vim ~/.zshrc"
 alias vimconfig="vim ~/.vimrc"
+alias hammerconfig="code ~/.hammerspoon/init.lua"
 alias cpwd="pwd | pbcopy"
 alias releasediff='git log master..dev --merges --first-parent dev --pretty=format:"%h %<(10,trunc)%aN %C(white)%<(15)%ar%Creset %C(red bold)%<(15)%D%Creset %s"'
 alias be='bundle exec'
