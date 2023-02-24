@@ -159,9 +159,8 @@ function enterWorkMode()
 end
 
 function enterCasualMode()
-  killIfRunning("Slack")
-  killIfRunning("Microsoft Teams")
-  killIfRunning("Microsoft Outlook")
+  hideIfRunning("Microsoft Teams")
+  hideIfRunning("Microsoft Outlook")
   hideIfRunning("Google Chrome")
 end
 
