@@ -53,11 +53,11 @@ end
 
 hs.hotkey.bind(HYPER, "U", function() push(0, 0, 0.5, 0.5) end)       -- Upper left corner
 hs.hotkey.bind(HYPER, "O", function() push(0.5, 0, 0.5, 0.5) end)     -- Upper right corner
-hs.hotkey.bind(HYPER, "N", function() push(0, 0.5, 0.5, 0.5) end)     -- Lower left corner
-hs.hotkey.bind(HYPER, ",", function() push(0.5, 0.5, 0.5, 0.5) end)   -- Lower right corner
+hs.hotkey.bind(HYPER, "B", function() push(0, 0.5, 0.5, 0.5) end)     -- Lower left corner
+hs.hotkey.bind(HYPER, "M", function() push(0.5, 0.5, 0.5, 0.5) end)   -- Lower right corner
 hs.hotkey.bind(HYPER, "J", function() push(0, 0, 0.5, 1) end)         -- Left half
 hs.hotkey.bind(HYPER, "L", function() push(0.5, 0, 0.5, 1) end)       -- Right half
-hs.hotkey.bind(HYPER, "M", function() push(0, 0.5, 1, 0.5) end)       -- Lower half
+hs.hotkey.bind(HYPER, "N", function() push(0, 0.5, 1, 0.5) end)       -- Lower half
 hs.hotkey.bind(HYPER, "I", function() push(0, 0, 1, 0.5) end)         -- Top half
 hs.hotkey.bind(HYPER, "K", function() push(0, 0, 1, 1) end)           -- Full
 hs.hotkey.bind(HYPER, "H", function() push(0.25, 0, 0.5, 1) end)      -- Full height, mid width, centered
