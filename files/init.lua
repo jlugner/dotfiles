@@ -153,7 +153,6 @@ end)
 
 -- Mode switching
 function enterWorkMode()
-  killIfRunning("Mail")
   hideIfRunning("Safari")
   setCodeLayout()
 end
