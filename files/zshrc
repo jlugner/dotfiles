@@ -13,6 +13,7 @@ source $ZSH/oh-my-zsh.sh
 export EDITOR=vim
 export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 export PATH="$PATH:$HOME/Documents/code/scripts/bin"
+export PATH="$PATH:$HOME/.meteor/"
 export AWS_VAULT_KEYCHAIN_NAME=login
 export HOMEBREW_NO_ANALYTICS=1
 
