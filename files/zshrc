@@ -10,6 +10,8 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
+unsetopt nomatch
+
 export EDITOR=vim
 export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 export PATH="$PATH:$HOME/Documents/code/scripts/bin"
@@ -21,7 +23,7 @@ eval "$(rbenv init - zsh)"
 
 alias reload=". ~/.zshrc"
 alias j="jump"
-alias zconfig="vim ~/.zshrc"
+alias zconfig="vim ~/dotfiles/files/zshrc"
 alias vimconfig="vim ~/.vimrc"
 alias hammerconfig="code ~/.hammerspoon/init.lua"
 alias cpwd="pwd | pbcopy"
