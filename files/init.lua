@@ -62,6 +62,11 @@ hs.hotkey.bind(HYPER, "I", function() push(0, 0, 1, 0.5) end)         -- Top hal
 hs.hotkey.bind(HYPER, "K", function() push(0, 0, 1, 1) end)           -- Full
 hs.hotkey.bind(HYPER, "H", function() push(0.25, 0, 0.5, 1) end)      -- Full height, mid width, centered
 hs.hotkey.bind(HYPER, "G", function() push(0.25, 0.25, 0.5, 0.5) end) -- Mid height, mid width, centered
+hs.hotkey.bind(HYPER, "A", function() push(0, 0, 0.33, 1) end)        -- Left third width of screen in full height
+hs.hotkey.bind(HYPER, "S", function() push(0.33, 0, 0.33, 1) end)     -- Mid third width of screen in full height
+hs.hotkey.bind(HYPER, "D", function() push(0.66, 0, 0.33, 1) end)     -- Right third width of screen in full height
+hs.hotkey.bind(HYPER, "§", function() push(0, 0, 0.33, 0.5) end)     -- Upper left third width, half height
+hs.hotkey.bind(HYPER, "Z", function() push(0, 0.5, 0.33, 0.5) end)    -- Lower left third width, half height
 
 function singleMonitorCodeLayout()
   screen = hs.screen('Built%-in')
